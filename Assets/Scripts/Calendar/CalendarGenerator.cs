@@ -1,61 +1,51 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
 public class CalendarGenerator : MonoBehaviour
 {
+    [Header("Parents")]
+    [SerializeField] private Transform dayParent;
+    [SerializeField] private Transform dateParent;
+
+    [Header("Prefabs")]
+    [SerializeField] private GameObject dayPrefab;
+    [SerializeField] private GameObject datePrefab;
+
     [Header("Header")]
     [SerializeField] private TMP_Text monthYearText;
 
-    [Header("Parents")]
-    public Transform dayParent;
-    public Transform dateParent;
+    [Header("Starting Date")]
+    [SerializeField] private bool useCurrentDate = true;
+    [SerializeField] private int month = 8;
+    [SerializeField] private int year = 2026;
 
-    [Header("Prefabs")]
-    public GameObject dayPrefab;
-    public GameObject datePrefab;
-
-    [Header("Calendar")]
-    public int month = 8;
-    public int year = 2026;
+    private DateTime currentDate;
 
     private readonly string[] dayNames =
     {
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat",
-        "Sun"
+        "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"
     };
+
+    private readonly List<TMP_Text> dateTexts = new List<TMP_Text>();
 
     private void Start()
     {
-        GenerateCalendar();
-    }
+        if (useCurrentDate)
+            currentDate = DateTime.Today;
+        else
+            currentDate = new DateTime(year, month, 1);
 
-    public void GenerateCalendar()
-    {
-        ClearChildren(dayParent);
-        ClearChildren(dateParent);
-
-        UpdateHeader();
         GenerateDayHeaders();
-        GenerateDates();
+        CreateDateCells();
+
+        RefreshCalendar();
     }
 
-    private void UpdateHeader()
-    {
-        DateTime date = new DateTime(year, month, 1);
-        monthYearText.text = date.ToString("MMMM yyyy");
-
-        // Examples:
-        // August 2026
-        // September 2026
-        // January 2027
-    }
-
+    //==================================================
+    // Create Week Headers Once
+    //==================================================
     private void GenerateDayHeaders()
     {
         foreach (string day in dayNames)
@@ -69,77 +59,78 @@ public class CalendarGenerator : MonoBehaviour
         }
     }
 
-    private void GenerateDates()
+    //==================================================
+    // Create 42 Cells Once
+    //==================================================
+    private void CreateDateCells()
     {
-        DateTime firstDay = new DateTime(year, month, 1);
+        dateTexts.Clear();
 
-        int daysInMonth = DateTime.DaysInMonth(year, month);
+        for (int i = 0; i < 42; i++)
+        {
+            GameObject obj = Instantiate(datePrefab, dateParent);
+
+            TMP_Text txt = obj.GetComponentInChildren<TMP_Text>();
+
+            dateTexts.Add(txt);
+        }
+    }
+
+    //==================================================
+    // Refresh Calendar
+    //==================================================
+    public void RefreshCalendar()
+    {
+        monthYearText.text = currentDate.ToString("MMMM yyyy");
+
+        DateTime firstDay = new DateTime(currentDate.Year, currentDate.Month, 1);
+
+        int daysInMonth = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
 
         // Monday = 0
         int startIndex = ((int)firstDay.DayOfWeek + 6) % 7;
 
-        // Empty cells before first day
-        for (int i = 0; i < startIndex; i++)
+        // Clear all cells
+        foreach (TMP_Text txt in dateTexts)
         {
-            GameObject obj = Instantiate(datePrefab, dateParent);
-
-            TMP_Text txt = obj.GetComponentInChildren<TMP_Text>();
-
-            if (txt != null)
-                txt.text = "";
+            txt.text = "";
+            txt.transform.parent.gameObject.SetActive(false);
         }
 
-        // Dates
-        for (int i = 1; i <= daysInMonth; i++)
+        // Fill dates
+        for (int day = 1; day <= daysInMonth; day++)
         {
-            GameObject obj = Instantiate(datePrefab, dateParent);
+            int index = startIndex + day - 1;
 
-            TMP_Text txt = obj.GetComponentInChildren<TMP_Text>();
-
-            if (txt != null)
-                txt.text = i.ToString();
+            dateTexts[index].transform.parent.gameObject.SetActive(true);
+            dateTexts[index].text = day.ToString();
         }
     }
 
+    //==================================================
+    // Buttons
+    //==================================================
     public void NextMonth()
     {
-        month++;
-
-        if (month > 12)
-        {
-            month = 1;
-            year++;
-        }
-
-        GenerateCalendar();
+        currentDate = currentDate.AddMonths(1);
+        RefreshCalendar();
     }
 
     public void PreviousMonth()
     {
-        month--;
-
-        if (month < 1)
-        {
-            month = 12;
-            year--;
-        }
-
-        GenerateCalendar();
+        currentDate = currentDate.AddMonths(-1);
+        RefreshCalendar();
     }
 
-    public void SetDate(int newMonth, int newYear)
+    public void GoToToday()
     {
-        month = Mathf.Clamp(newMonth, 1, 12);
-        year = newYear;
-
-        GenerateCalendar();
+        currentDate = DateTime.Today;
+        RefreshCalendar();
     }
 
-    private void ClearChildren(Transform parent)
+    public void SetDate(int year, int month)
     {
-        while (parent.childCount > 0)
-        {
-            Destroy(parent.GetChild(0).gameObject);
-        }
+        currentDate = new DateTime(year, month, 1);
+        RefreshCalendar();
     }
 }

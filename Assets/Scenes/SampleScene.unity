@@ -783,6 +783,7 @@ MonoBehaviour:
   dateParent: {fileID: 1591817753}
   dayPrefab: {fileID: 5587393268655199996, guid: e35ff54b9e377a74c82cc6bd000e00c7, type: 3}
   datePrefab: {fileID: 3923801186495303723, guid: 754f88acb595dd7438308f6fac6dce7a, type: 3}
+  monthYearText: {fileID: 9592275}
   month: 8
   year: 2026
 --- !u!114 &1591817755
@@ -798,11 +799,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GridLayoutGroup
   m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
+    m_Left: 50
+    m_Right: 50
+    m_Top: 50
+    m_Bottom: 50
+  m_ChildAlignment: 4
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 120, y: 120}
