@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 public class CalendarGenerator : MonoBehaviour
 {
@@ -16,36 +16,31 @@ public class CalendarGenerator : MonoBehaviour
     [Header("Header")]
     [SerializeField] private TMP_Text monthYearText;
 
-    [Header("Starting Date")]
-    [SerializeField] private bool useCurrentDate = true;
-    [SerializeField] private int month = 8;
-    [SerializeField] private int year = 2026;
-
-    private DateTime currentDate;
-
     private readonly string[] dayNames =
     {
-        "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"
+        "Mon","Tue","Wed","Thu","Fri","Sat","Sun"
     };
 
     private readonly List<TMP_Text> dateTexts = new List<TMP_Text>();
 
-    private void Start()
+    private bool initialized = false;
+
+    private void Awake()
     {
-        if (useCurrentDate)
-            currentDate = DateTime.Today;
-        else
-            currentDate = new DateTime(year, month, 1);
+        Initialize();
+    }
+
+    private void Initialize()
+    {
+        if (initialized)
+            return;
+
+        initialized = true;
 
         GenerateDayHeaders();
         CreateDateCells();
-
-        RefreshCalendar();
     }
 
-    //==================================================
-    // Create Week Headers Once
-    //==================================================
     private void GenerateDayHeaders()
     {
         foreach (string day in dayNames)
@@ -59,13 +54,8 @@ public class CalendarGenerator : MonoBehaviour
         }
     }
 
-    //==================================================
-    // Create 42 Cells Once
-    //==================================================
     private void CreateDateCells()
     {
-        dateTexts.Clear();
-
         for (int i = 0; i < 42; i++)
         {
             GameObject obj = Instantiate(datePrefab, dateParent);
@@ -76,61 +66,33 @@ public class CalendarGenerator : MonoBehaviour
         }
     }
 
-    //==================================================
-    // Refresh Calendar
-    //==================================================
-    public void RefreshCalendar()
+    public void GenerateCalendar(MonthData monthData)
     {
+        DateTime currentDate = new DateTime(monthData.year, monthData.month, 1);
+
         monthYearText.text = currentDate.ToString("MMMM yyyy");
 
-        DateTime firstDay = new DateTime(currentDate.Year, currentDate.Month, 1);
+        int daysInMonth = DateTime.DaysInMonth(
+            monthData.year,
+            monthData.month);
 
-        int daysInMonth = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
+        int startIndex =
+            ((int)currentDate.DayOfWeek + 6) % 7;
 
-        // Monday = 0
-        int startIndex = ((int)firstDay.DayOfWeek + 6) % 7;
-
-        // Clear all cells
         foreach (TMP_Text txt in dateTexts)
         {
             txt.text = "";
             txt.transform.parent.gameObject.SetActive(false);
         }
 
-        // Fill dates
         for (int day = 1; day <= daysInMonth; day++)
         {
             int index = startIndex + day - 1;
 
             dateTexts[index].transform.parent.gameObject.SetActive(true);
             dateTexts[index].text = day.ToString();
+
+            // CalendarCell will be added later
         }
-    }
-
-    //==================================================
-    // Buttons
-    //==================================================
-    public void NextMonth()
-    {
-        currentDate = currentDate.AddMonths(1);
-        RefreshCalendar();
-    }
-
-    public void PreviousMonth()
-    {
-        currentDate = currentDate.AddMonths(-1);
-        RefreshCalendar();
-    }
-
-    public void GoToToday()
-    {
-        currentDate = DateTime.Today;
-        RefreshCalendar();
-    }
-
-    public void SetDate(int year, int month)
-    {
-        currentDate = new DateTime(year, month, 1);
-        RefreshCalendar();
     }
 }
