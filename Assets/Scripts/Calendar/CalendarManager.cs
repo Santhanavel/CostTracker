@@ -51,7 +51,8 @@ namespace FoodTracker.UI
             }
             else
             {
-                Destroy(gameObject);
+                Destroy(this);
+                return;
             }
 
             SelfWire();
@@ -60,16 +61,16 @@ namespace FoodTracker.UI
         private void SelfWire()
         {
             if (calendarGenerator == null) calendarGenerator = GetComponent<CalendarGenerator>();
-            if (monthlySummary == null) monthlySummary = transform.Find("Center/Monthly Summary Panel")?.GetComponent<MonthlySummary>();
+            if (monthlySummary == null) monthlySummary = transform.Find("Content Container/Monthly Summary Panel")?.GetComponent<MonthlySummary>();
             
-            if (completionPercentageTxt == null) completionPercentageTxt = transform.Find("Center/Completion Rate Panel/Circle Wrap/Text")?.GetComponent<TMP_Text>();
-            if (circularRingImage == null) circularRingImage = transform.Find("Center/Completion Rate Panel/Circle Wrap/Fill")?.GetComponent<Image>();
-            if (mealsRatioTxt == null) mealsRatioTxt = transform.Find("Center/Completion Rate Panel/Details Wrap/Ratio Label")?.GetComponent<TMP_Text>();
-            if (horizontalProgressBarImage == null) horizontalProgressBarImage = transform.Find("Center/Completion Rate Panel/Details Wrap/Progress Track/Fill")?.GetComponent<Image>();
-            if (remainingMealsTxt == null) remainingMealsTxt = transform.Find("Center/Completion Rate Panel/Details Wrap/Subtext")?.GetComponent<TMP_Text>();
+            if (completionPercentageTxt == null) completionPercentageTxt = transform.Find("Content Container/Completion Rate Panel/Circle Wrap/Text")?.GetComponent<TMP_Text>();
+            if (circularRingImage == null) circularRingImage = transform.Find("Content Container/Completion Rate Panel/Circle Wrap/Fill")?.GetComponent<Image>();
+            if (mealsRatioTxt == null) mealsRatioTxt = transform.Find("Content Container/Completion Rate Panel/Details Wrap/Ratio Label")?.GetComponent<TMP_Text>();
+            if (horizontalProgressBarImage == null) horizontalProgressBarImage = transform.Find("Content Container/Completion Rate Panel/Details Wrap/Progress Track/Fill")?.GetComponent<Image>();
+            if (remainingMealsTxt == null) remainingMealsTxt = transform.Find("Content Container/Completion Rate Panel/Details Wrap/Subtext")?.GetComponent<TMP_Text>();
 
-            if (prevMonthBtn == null) prevMonthBtn = transform.Find("Header/Prev Button")?.GetComponent<Button>();
-            if (nextMonthBtn == null) nextMonthBtn = transform.Find("Header/Next Button")?.GetComponent<Button>();
+            if (prevMonthBtn == null) prevMonthBtn = transform.Find("Content Container/Header Card/Month Navigation Row/Prev Button")?.GetComponent<Button>();
+            if (nextMonthBtn == null) nextMonthBtn = transform.Find("Content Container/Header Card/Month Navigation Row/Next Button")?.GetComponent<Button>();
 
             // Self-wire bottom navigation buttons dynamically at runtime
             Transform bottomPanel = transform.Find("Bottom");
@@ -89,6 +90,11 @@ namespace FoodTracker.UI
                 currentDate = DateTime.Today;
             else
                 currentDate = new DateTime(2026, 8, 1);
+
+            Color greenColor = new Color(0.18f, 0.8f, 0.443f, 1.0f); // `#2ECC71`
+            Color yellowColor = new Color(1.0f, 0.757f, 0.027f, 1.0f); // `#FFC107`
+            Color redColor = new Color(1.0f, 0.357f, 0.357f, 1.0f); // `#FF5B5B`
+            Color grayColor = new Color(0.655f, 0.718f, 0.694f, 0.5f); // `#A7B7B1`
 
             SelfWire();
 

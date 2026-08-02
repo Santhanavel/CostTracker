@@ -22,10 +22,10 @@ namespace FoodTracker.Calendar
         [SerializeField] private TMP_Text monthYearText;
 
         [Header("Day Cell State Colors")]
-        [SerializeField] private Color activeCellColor = new Color(0.06f, 0.16f, 0.13f, 1.0f);   // Spruce background
-        [SerializeField] private Color futureCellColor = new Color(0.04f, 0.12f, 0.10f, 0.6f);   // Muted dark background
-        [SerializeField] private Color emptyCellColor = new Color(0.02f, 0.08f, 0.06f, 0.2f);     // Very dark empty
-        [SerializeField] private Color selectedBorderColor = new Color(0.18f, 0.74f, 0.46f, 1.0f); // Bright green outline
+        [SerializeField] private Color activeCellColor = new Color(0.09f, 0.196f, 0.161f, 1.0f);   // `#173229` Secondary Card
+        [SerializeField] private Color futureCellColor = new Color(0.09f, 0.196f, 0.161f, 0.4f);   // 40% opacity cell
+        [SerializeField] private Color emptyCellColor = new Color(0.027f, 0.102f, 0.09f, 0.2f);     // Translucent `#071A17`
+        [SerializeField] private Color selectedBorderColor = new Color(0.18f, 0.8f, 0.443f, 1.0f); // `#2ECC71` Selected glow border
 
         private readonly string[] dayNames = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
         private readonly List<DateCell> dateCells = new List<DateCell>();
@@ -39,9 +39,9 @@ namespace FoodTracker.Calendar
 
         private void SelfWire()
         {
-            if (dayParent == null) dayParent = transform.Find("Center/Days Grid");
-            if (dateParent == null) dateParent = transform.Find("Center/Dates Grid");
-            if (monthYearText == null) monthYearText = transform.Find("Header/Title Wrap/Title Text")?.GetComponent<TMP_Text>();
+            if (dayParent == null) dayParent = transform.Find("Content Container/Header Card/Days Grid");
+            if (dateParent == null) dateParent = transform.Find("Content Container/Dates Grid");
+            if (monthYearText == null) monthYearText = transform.Find("Content Container/Header Card/Month Navigation Row/Title Wrap/Title Text")?.GetComponent<TMP_Text>();
         }
 
         private void Initialize()
@@ -79,7 +79,7 @@ namespace FoodTracker.Calendar
                 if (text != null)
                 {
                     text.text = day;
-                    text.color = new Color(0.18f, 0.74f, 0.46f, 1.0f); // Green headers
+                    text.color = new Color(0.655f, 0.718f, 0.694f, 1.0f); // Secondary light green `#A7B7B1`
                     text.fontStyle = FontStyles.Bold;
                     text.alignment = TextAlignmentOptions.Center;
                     text.fontSize = 18;
@@ -121,12 +121,6 @@ namespace FoodTracker.Calendar
             int daysInMonth = DateTime.DaysInMonth(year, month);
             int startIndex = ((int)firstDay.DayOfWeek + 6) % 7; // Mon = 0, Sun = 6
 
-            // Reset all cells
-            foreach (DateCell cell in dateCells)
-            {
-                cell.SetEmpty(emptyCellColor);
-            }
-
             string selStr = PlayerPrefs.GetString("SelectedCalendarDate", "");
             DateTime selectedDate;
             if (!DateTime.TryParse(selStr, out selectedDate))
@@ -134,7 +128,27 @@ namespace FoodTracker.Calendar
                 selectedDate = DateTime.Today;
             }
 
-            // Fill month days
+            // Fill previous month dates (faded opacity)
+            DateTime prevMonth = firstDay.AddMonths(-1);
+            int daysInPrevMonth = DateTime.DaysInMonth(prevMonth.Year, prevMonth.Month);
+            for (int i = 0; i < startIndex; i++)
+            {
+                int dayNum = daysInPrevMonth - (startIndex - 1 - i);
+                DateTime cellDate = new DateTime(prevMonth.Year, prevMonth.Month, dayNum);
+                DateCell cell = dateCells[i];
+                cell.gameObject.SetActive(true);
+                cell.Setup(
+                    cellDate,
+                    emptyCellColor,
+                    false,
+                    selectedBorderColor,
+                    0,
+                    true, // Mark as future/faded
+                    onDaySelected
+                );
+            }
+
+            // Fill current month days
             for (int day = 1; day <= daysInMonth; day++)
             {
                 int index = startIndex + day - 1;
@@ -157,6 +171,26 @@ namespace FoodTracker.Calendar
                     selectedBorderColor, 
                     completedCount, 
                     isFutureOrNoData, 
+                    onDaySelected
+                );
+            }
+
+            // Fill next month dates (faded opacity)
+            DateTime nextMonth = firstDay.AddMonths(1);
+            int totalLogged = startIndex + daysInMonth;
+            for (int i = totalLogged; i < 42; i++)
+            {
+                int dayNum = i - totalLogged + 1;
+                DateTime cellDate = new DateTime(nextMonth.Year, nextMonth.Month, dayNum);
+                DateCell cell = dateCells[i];
+                cell.gameObject.SetActive(true);
+                cell.Setup(
+                    cellDate,
+                    emptyCellColor,
+                    false,
+                    selectedBorderColor,
+                    0,
+                    true, // Mark as future/faded
                     onDaySelected
                 );
             }
