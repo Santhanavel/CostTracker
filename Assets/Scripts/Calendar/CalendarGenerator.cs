@@ -16,14 +16,25 @@ public class CalendarGenerator : MonoBehaviour
     [Header("Header")]
     [SerializeField] private TMP_Text monthYearText;
 
+    [Header("Day Colors")]
+    [SerializeField] private Color todayColor = new Color(0.25f, 0.75f, 0.35f);
+    [SerializeField] private Color pastColor = new Color(0.75f, 0.75f, 0.75f);
+    [SerializeField] private Color futureColor = Color.white;
+    [SerializeField] private Color emptyCellColor = new Color(0.55f, 0.55f, 0.55f, 0.45f);
     private readonly string[] dayNames =
     {
-        "Mon","Tue","Wed","Thu","Fri","Sat","Sun"
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
     };
 
-    private readonly List<TMP_Text> dateTexts = new List<TMP_Text>();
+    private readonly List<DateCell> dateCells = new List<DateCell>();
 
-    private bool initialized = false;
+    private bool initialized;
 
     private void Awake()
     {
@@ -43,56 +54,93 @@ public class CalendarGenerator : MonoBehaviour
 
     private void GenerateDayHeaders()
     {
+        foreach (Transform child in dayParent)
+            Destroy(child.gameObject);
+
         foreach (string day in dayNames)
         {
             GameObject obj = Instantiate(dayPrefab, dayParent);
 
-            TMP_Text txt = obj.GetComponentInChildren<TMP_Text>();
+            TMP_Text text = obj.GetComponentInChildren<TMP_Text>();
 
-            if (txt != null)
-                txt.text = day;
+            if (text != null)
+                text.text = day;
         }
     }
 
     private void CreateDateCells()
     {
+        dateCells.Clear();
+
+        foreach (Transform child in dateParent)
+            Destroy(child.gameObject);
+
         for (int i = 0; i < 42; i++)
         {
             GameObject obj = Instantiate(datePrefab, dateParent);
 
-            TMP_Text txt = obj.GetComponentInChildren<TMP_Text>();
+            DateCell cell = obj.GetComponent<DateCell>();
 
-            dateTexts.Add(txt);
+            if (cell == null)
+            {
+                Debug.LogError("Date Prefab is missing DateCell component.");
+                continue;
+            }
+            dateCells.Add(cell);
         }
     }
 
     public void GenerateCalendar(MonthData monthData)
     {
-        DateTime currentDate = new DateTime(monthData.year, monthData.month, 1);
+        DateTime firstDay = new DateTime(monthData.year, monthData.month, 1);
 
-        monthYearText.text = currentDate.ToString("MMMM yyyy");
+        monthYearText.text = firstDay.ToString("MMMM yyyy");
 
-        int daysInMonth = DateTime.DaysInMonth(
-            monthData.year,
-            monthData.month);
+        int daysInMonth = DateTime.DaysInMonth(monthData.year, monthData.month);
+        // Monday = 0
+        int startIndex = ((int)firstDay.DayOfWeek + 6) % 7;
 
-        int startIndex =
-            ((int)currentDate.DayOfWeek + 6) % 7;
-
-        foreach (TMP_Text txt in dateTexts)
+        foreach (DateCell cell in dateCells)
         {
-            txt.text = "";
-            txt.transform.parent.gameObject.SetActive(false);
+            cell.SetEmpty(emptyCellColor);
         }
 
+        // Fill month
         for (int day = 1; day <= daysInMonth; day++)
         {
             int index = startIndex + day - 1;
 
-            dateTexts[index].transform.parent.gameObject.SetActive(true);
-            dateTexts[index].text = day.ToString();
+            DateTime cellDate = new DateTime(
+                monthData.year,
+                monthData.month,
+                day);
 
-            // CalendarCell will be added later
+            Color color = GetDayColor(cellDate);
+
+            DateCell cell = dateCells[index];
+
+            cell.gameObject.SetActive(true);
+
+            cell.SetState(
+                color,
+                day.ToString()
+            );
+
+            // Future:
+            // cell.Initialize(monthData.GetDay(day));
         }
+    }
+
+    private Color GetDayColor(DateTime date)
+    {
+        DateTime today = DateTime.Today;
+
+        if (date.Date == today)
+            return todayColor;
+
+        if (date.Date < today)
+            return pastColor;
+
+        return futureColor;
     }
 }

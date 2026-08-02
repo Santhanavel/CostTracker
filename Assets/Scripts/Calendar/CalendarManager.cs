@@ -19,7 +19,7 @@ public class CalendarManager : MonoBehaviour
 
     public MonthData CurrentMonthData =>
         MealDataManager.Instance.GetOrCreateMonth(CurrentYear, CurrentMonth);
-
+   
     private void Awake()
     {
         if (Instance == null)
