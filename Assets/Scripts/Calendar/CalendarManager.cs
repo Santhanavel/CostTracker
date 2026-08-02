@@ -84,6 +84,9 @@ public class CalendarManager : MonoBehaviour
 
     public void UpdateSummary()
     {
+        int breakfast =
+            MealDataManager.Instance.GetBreakfastCount(CurrentYear, CurrentMonth);
+
         int lunch =
             MealDataManager.Instance.GetLunchCount(CurrentYear, CurrentMonth);
 
@@ -99,6 +102,7 @@ public class CalendarManager : MonoBehaviour
         monthlySummary.UpdateSummary(
             CurrentYear,
             CurrentMonth,
+            breakfast,
             lunch,
             dinner,
             meals,
@@ -108,6 +112,16 @@ public class CalendarManager : MonoBehaviour
     #endregion
 
     #region Cell Updates
+
+    public void ToggleBreakfast(int day)
+    {
+        MealDataManager.Instance.ToggleBreakfast(
+            CurrentYear,
+            CurrentMonth,
+            day);
+
+        Refresh();
+    }
 
     public void ToggleLunch(int day)
     {

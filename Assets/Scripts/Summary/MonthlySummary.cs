@@ -11,6 +11,7 @@ public class MonthlySummary : MonoBehaviour
     public void UpdateSummary(
         int year,
         int month,
+        int breakfast,
         int lunch,
         int dinner,
         int meals,
@@ -21,6 +22,7 @@ public class MonthlySummary : MonoBehaviour
 
         Clear();
 
+        CreateItem("Breakfast", breakfast.ToString());
         CreateItem("Lunch", lunch.ToString());
         CreateItem("Dinner", dinner.ToString());
         CreateItem("Meals", meals.ToString());
