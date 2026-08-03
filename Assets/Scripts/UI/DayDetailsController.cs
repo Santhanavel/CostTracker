@@ -107,16 +107,19 @@ namespace FoodTracker.UI
         {
             if (SaveManager.Instance == null || SaveManager.Instance.AppData == null) return;
 
-            float costPerMeal = SaveManager.Instance.AppData.settings.mealCost;
+            var settings = SaveManager.Instance.AppData.settings;
+            float bCost = settings.breakfastCost;
+            float lCost = settings.lunchCost;
+            float dCost = settings.dinnerCost;
             float dayCost = 0f;
 
-            if (record.breakfastCompleted) dayCost += costPerMeal;
-            if (record.lunchCompleted) dayCost += costPerMeal;
-            if (record.dinnerCompleted) dayCost += costPerMeal;
+            if (record.breakfastCompleted) dayCost += bCost;
+            if (record.lunchCompleted) dayCost += lCost;
+            if (record.dinnerCompleted) dayCost += dCost;
 
             if (dayCostText != null)
             {
-                dayCostText.text = $"{dayCost:F0}";
+                dayCostText.text = $"Total Cost: Rs {dayCost:F0}";
             }
         }
 

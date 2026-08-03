@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: More
+  m_text: Settings
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6259,7 +6259,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 52af46ac9d1f2fc4fa96434b97ca6af2, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1c02f969577b34741a1422477b0f49e7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -8049,7 +8049,6 @@ MonoBehaviour:
   navHomeButton: {fileID: 2041586520340404652}
   navCalendarButton: {fileID: 6184595762771316903}
   navStatsButton: {fileID: 3355417867217799802}
-  navWeightButton: {fileID: 0}
   navMoreButton: {fileID: 5669242363823498943}
   startWithCurrentDate: 1
 --- !u!114 &7726872166074087612

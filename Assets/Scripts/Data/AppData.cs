@@ -28,6 +28,9 @@ namespace FoodTracker.Data
     public class SettingsData
     {
         public float mealCost = 50f;
+        public float breakfastCost = 50f;
+        public float lunchCost = 50f;
+        public float dinnerCost = 50f;
         public string currency = "INR";
         public string startWeek = "Monday";
         public string theme = "System";

@@ -31,7 +31,6 @@ namespace FoodTracker.UI
         [SerializeField] private Button navHomeButton;
         [SerializeField] private Button navCalendarButton;
         [SerializeField] private Button navStatsButton;
-        [SerializeField] private Button navWeightButton;
         [SerializeField] private Button navMoreButton;
 
         private void OnEnable()
@@ -46,8 +45,7 @@ namespace FoodTracker.UI
             if (navCalendarButton != null) navCalendarButton.onClick.AddListener(() => NavigateTo("Calender Page"));
             // Placeholders for other pages
             if (navStatsButton != null) navStatsButton.onClick.AddListener(() => NavigateTo("Statistics Page"));
-            if (navWeightButton != null) navWeightButton.onClick.AddListener(() => NavigateTo("Weight Page"));
-            if (navMoreButton != null) navMoreButton.onClick.AddListener(() => NavigateTo("More Page"));
+            if (navMoreButton != null) navMoreButton.onClick.AddListener(() => NavigateTo("Settings Page"));
 
             RefreshDashboard();
         }
@@ -150,13 +148,12 @@ namespace FoodTracker.UI
             // 1. Calculate Today's Cost
             string todayStr = DateTime.Today.ToString("yyyy-MM-dd");
             MealRecord todayRecord = appData.mealRecords.Find(r => r.dateString == todayStr);
-            float costPerMeal = appData.settings.mealCost;
             float totalCost = 0f;
             if (todayRecord != null)
             {
-                if (todayRecord.breakfastCompleted) totalCost += costPerMeal;
-                if (todayRecord.lunchCompleted) totalCost += costPerMeal;
-                if (todayRecord.dinnerCompleted) totalCost += costPerMeal;
+                if (todayRecord.breakfastCompleted) totalCost += appData.settings.breakfastCost;
+                if (todayRecord.lunchCompleted) totalCost += appData.settings.lunchCost;
+                if (todayRecord.dinnerCompleted) totalCost += appData.settings.dinnerCost;
             }
             if (todayCostText != null)
             {

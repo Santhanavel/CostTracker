@@ -32,7 +32,6 @@ namespace FoodTracker.UI
         [SerializeField] private Button navHomeButton;
         [SerializeField] private Button navCalendarButton;
         [SerializeField] private Button navStatsButton;
-        [SerializeField] private Button navWeightButton;
         [SerializeField] private Button navMoreButton;
 
         [Header("Settings")]
@@ -79,7 +78,6 @@ namespace FoodTracker.UI
                 if (navHomeButton == null) navHomeButton = bottomPanel.Find("Home Tab Button")?.GetComponent<Button>();
                 if (navCalendarButton == null) navCalendarButton = bottomPanel.Find("Calendar Tab Button")?.GetComponent<Button>();
                 if (navStatsButton == null) navStatsButton = bottomPanel.Find("Stats Tab Button")?.GetComponent<Button>();
-                if (navWeightButton == null) navWeightButton = bottomPanel.Find("Weight Tab Button")?.GetComponent<Button>();
                 if (navMoreButton == null) navMoreButton = bottomPanel.Find("More Tab Button")?.GetComponent<Button>();
             }
         }
@@ -104,8 +102,7 @@ namespace FoodTracker.UI
             if (navHomeButton != null) navHomeButton.onClick.AddListener(() => NavigateTo("Meal update page"));
             if (navCalendarButton != null) navCalendarButton.onClick.AddListener(() => NavigateTo("Calender Page"));
             if (navStatsButton != null) navStatsButton.onClick.AddListener(() => NavigateTo("Statistics Page"));
-            if (navWeightButton != null) navWeightButton.onClick.AddListener(() => NavigateTo("Meal update page"));
-            if (navMoreButton != null) navMoreButton.onClick.AddListener(() => NavigateTo("More Page"));
+            if (navMoreButton != null) navMoreButton.onClick.AddListener(() => NavigateTo("Settings Page"));
 
             Refresh();
         }

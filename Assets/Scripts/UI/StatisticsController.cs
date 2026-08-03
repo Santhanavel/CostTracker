@@ -27,7 +27,6 @@ namespace FoodTracker.UI
         [SerializeField] private Button navHomeButton;
         [SerializeField] private Button navCalendarButton;
         [SerializeField] private Button navStatsButton;
-        [SerializeField] private Button navWeightButton;
         [SerializeField] private Button navMoreButton;
 
         private void OnEnable()
@@ -40,8 +39,7 @@ namespace FoodTracker.UI
             if (navHomeButton != null) navHomeButton.onClick.AddListener(() => NavigateTo("Meal update page"));
             if (navCalendarButton != null) navCalendarButton.onClick.AddListener(() => NavigateTo("Calender Page"));
             if (navStatsButton != null) navStatsButton.onClick.AddListener(() => NavigateTo("Statistics Page"));
-            if (navWeightButton != null) navWeightButton.onClick.AddListener(() => NavigateTo("Weight Page"));
-            if (navMoreButton != null) navMoreButton.onClick.AddListener(() => NavigateTo("More Page"));
+            if (navMoreButton != null) navMoreButton.onClick.AddListener(() => NavigateTo("Settings Page"));
 
             CalculateAndRefreshStats();
         }
@@ -65,34 +63,39 @@ namespace FoodTracker.UI
             int curMonthMeals = 0;
             int prevMonthMeals = 0;
 
+            float curMonthCost = 0f;
+            float prevMonthCost = 0f;
             float[] weekdayMeals = new float[7]; // Group meals by day-of-week (0=Mon, ..., 6=Sun)
+            float bCost = appData.settings.breakfastCost;
+            float lCost = appData.settings.lunchCost;
+            float dCost = appData.settings.dinnerCost;
 
             foreach (var record in appData.mealRecords)
             {
                 if (DateTime.TryParse(record.dateString, out DateTime date))
                 {
+                    float cost = 0f;
                     int completed = 0;
-                    if (record.breakfastCompleted) completed++;
-                    if (record.lunchCompleted) completed++;
-                    if (record.dinnerCompleted) completed++;
+                    if (record.breakfastCompleted) { completed++; cost += bCost; }
+                    if (record.lunchCompleted) { completed++; cost += lCost; }
+                    if (record.dinnerCompleted) { completed++; cost += dCost; }
 
                     if (date.Year == currentYear && date.Month == currentMonth)
                     {
                         curMonthMeals += completed;
+                        curMonthCost += cost;
 
                         // Increment weekday stats
                         int dayIdx = ((int)date.DayOfWeek + 6) % 7; // Mon = 0 ... Sun = 6
-                        weekdayMeals[dayIdx] += completed;
+                        weekdayMeals[dayIdx] += cost; // use cost instead of simple completed count for graph fill size
                     }
                     else if (date.Year == prevYear && date.Month == prevMonth)
                     {
                         prevMonthMeals += completed;
+                        prevMonthCost += cost;
                     }
                 }
             }
-
-            float curMonthCost = curMonthMeals * mealCost;
-            float prevMonthCost = prevMonthMeals * mealCost;
 
             if (currentMonthCostText != null) currentMonthCostText.text = $"Rs {curMonthCost:F0}";
             if (previousMonthCostText != null) previousMonthCostText.text = $"Rs {prevMonthCost:F0}";
@@ -127,15 +130,15 @@ namespace FoodTracker.UI
             }
 
             // 3. Weekday Cost split
-            float maxDayMeals = 1f;
+            float maxDayCost = 1f;
             for (int i = 0; i < 7; i++)
             {
-                if (weekdayMeals[i] > maxDayMeals) maxDayMeals = weekdayMeals[i];
+                if (weekdayMeals[i] > maxDayCost) maxDayCost = weekdayMeals[i];
             }
 
             for (int i = 0; i < 7; i++)
             {
-                float dayCost = weekdayMeals[i] * mealCost;
+                float dayCost = weekdayMeals[i];
 
                 if (i < weekdayCostTexts.Length && weekdayCostTexts[i] != null)
                 {
@@ -144,7 +147,7 @@ namespace FoodTracker.UI
 
                 if (i < weekdayBarFills.Length && weekdayBarFills[i] != null)
                 {
-                    weekdayBarFills[i].fillAmount = weekdayMeals[i] / maxDayMeals; // Normalized ratio
+                    weekdayBarFills[i].fillAmount = weekdayMeals[i] / maxDayCost; // Normalized ratio
                 }
             }
         }

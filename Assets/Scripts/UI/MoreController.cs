@@ -22,9 +22,9 @@ namespace FoodTracker.UI
 
         private void Start()
         {
-            if (profileButton != null) profileButton.onClick.AddListener(() => NavigateTo("Profile Page"));
+            if (profileButton != null) profileButton.onClick.AddListener(() => NavigateTo("Settings Page"));
             if (settingsButton != null) settingsButton.onClick.AddListener(() => NavigateTo("Settings Page"));
-            if (remindersButton != null) remindersButton.onClick.AddListener(() => NavigateTo("Reminders Page"));
+            if (remindersButton != null) remindersButton.onClick.AddListener(() => NavigateTo("Settings Page"));
             if (replayOnboardingButton != null) replayOnboardingButton.onClick.AddListener(OnReplayOnboardingClicked);
 
             if (navHomeButton != null) navHomeButton.onClick.AddListener(() => NavigateTo("Meal update page"));
