@@ -109,13 +109,34 @@ namespace FoodTracker.UI
 
         public void NextMonth()
         {
-            currentDate = currentDate.AddMonths(1);
+            DateTime nextDate = currentDate.AddMonths(1);
+            if (nextDate.Year > DateTime.Today.Year || (nextDate.Year == DateTime.Today.Year && nextDate.Month > DateTime.Today.Month))
+            {
+                return; // Block future months
+            }
+            currentDate = nextDate;
             Refresh();
         }
 
         public void PreviousMonth()
         {
-            currentDate = currentDate.AddMonths(-1);
+            DateTime earliestDate = DateTime.Today;
+            if (SaveManager.Instance != null && SaveManager.Instance.AppData != null)
+            {
+                foreach (var record in SaveManager.Instance.AppData.mealRecords)
+                {
+                    if (DateTime.TryParse(record.dateString, out DateTime date))
+                    {
+                        if (date < earliestDate) earliestDate = date;
+                    }
+                }
+            }
+            DateTime prevDate = currentDate.AddMonths(-1);
+            if (prevDate.Year < earliestDate.Year || (prevDate.Year == earliestDate.Year && prevDate.Month < earliestDate.Month))
+            {
+                return; // Block older months with no logs
+            }
+            currentDate = prevDate;
             Refresh();
         }
 
@@ -124,6 +145,32 @@ namespace FoodTracker.UI
             if (calendarGenerator != null)
             {
                 calendarGenerator.GenerateCalendar(CurrentYear, CurrentMonth, OnDaySelected);
+            }
+
+            // Set dynamic button interactable feedback
+            if (nextMonthBtn != null)
+            {
+                DateTime nextDate = currentDate.AddMonths(1);
+                bool canGoNext = !(nextDate.Year > DateTime.Today.Year || (nextDate.Year == DateTime.Today.Year && nextDate.Month > DateTime.Today.Month));
+                nextMonthBtn.interactable = canGoNext;
+            }
+
+            if (prevMonthBtn != null)
+            {
+                DateTime earliestDate = DateTime.Today;
+                if (SaveManager.Instance != null && SaveManager.Instance.AppData != null)
+                {
+                    foreach (var record in SaveManager.Instance.AppData.mealRecords)
+                    {
+                        if (DateTime.TryParse(record.dateString, out DateTime date))
+                        {
+                            if (date < earliestDate) earliestDate = date;
+                        }
+                    }
+                }
+                DateTime prevDate = currentDate.AddMonths(-1);
+                bool canGoPrev = !(prevDate.Year < earliestDate.Year || (prevDate.Year == earliestDate.Year && prevDate.Month < earliestDate.Month));
+                prevMonthBtn.interactable = canGoPrev;
             }
 
             UpdateSummary();

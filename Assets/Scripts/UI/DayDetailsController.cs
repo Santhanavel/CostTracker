@@ -119,7 +119,7 @@ namespace FoodTracker.UI
 
             if (dayCostText != null)
             {
-                dayCostText.text = $"Total Cost: Rs {dayCost:F0}";
+                dayCostText.text = $"Rs {dayCost:F0}";
             }
         }
 

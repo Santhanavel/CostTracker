@@ -84,6 +84,11 @@ namespace FoodTracker.UI
                 {
                     dateText.color = new Color(0.682f, 0.718f, 0.698f, isFadedMonth ? 0.25f : 0.5f);
                 }
+                else if (completedCount == 0)
+                {
+                    // Red text for 0 meals completed to indicate missed day
+                    dateText.color = new Color(0.9f, 0.3f, 0.3f, isFadedMonth ? 0.5f : 1.0f);
+                }
                 else
                 {
                     dateText.color = new Color(0.973f, 0.976f, 0.98f, isFadedMonth ? 0.5f : 1.0f);
@@ -104,26 +109,8 @@ namespace FoodTracker.UI
                 }
                 else
                 {
-                    // Past/Present day states:
-                    // 0 meals = Red, 1 meal = Yellow, 2 meals = Blue, 3 meals = Green
-                    switch (completedCount)
-                    {
-                        case 0:
-                            cellColor = new Color(0.9f, 0.3f, 0.3f, 1.0f);    // Red
-                            break;
-                        case 1:
-                            cellColor = new Color(1.0f, 0.757f, 0.027f, 1.0f); // Yellow
-                            break;
-                        case 2:
-                            cellColor = new Color(0.176f, 0.612f, 0.859f, 1.0f); // Blue
-                            break;
-                        case 3:
-                            cellColor = new Color(0.18f, 0.8f, 0.443f, 1.0f);  // Green
-                            break;
-                        default:
-                            cellColor = new Color(0.09f, 0.196f, 0.161f, 1.0f);
-                            break;
-                    }
+                    // Past/Present day: Always use consistent theme dark green card background
+                    cellColor = new Color(0.09f, 0.196f, 0.161f, 1.0f); // `#173229` Theme Spruce Green
                 }
                 dateImage.color = cellColor;
             }

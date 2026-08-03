@@ -33,6 +33,10 @@ namespace FoodTracker.UI
         [SerializeField] private Button navStatsButton;
         [SerializeField] private Button navMoreButton;
 
+        [Header("Avatar Settings")]
+        [SerializeField] private UnityEngine.UI.Image avatarImage;
+        [SerializeField] private TMP_Text avatarText;
+
         private void OnEnable()
         {
             RefreshDashboard();
@@ -64,6 +68,36 @@ namespace FoodTracker.UI
             if (dateText != null)
             {
                 dateText.text = $"Today • {DateTime.Today:MMM d, yyyy}";
+            }
+
+            // Auto-wire and update Avatar info dynamically
+            if (avatarImage == null) avatarImage = transform.Find("Content Container/Header Row/Profile Avatar")?.GetComponent<UnityEngine.UI.Image>();
+            if (avatarText == null) avatarText = transform.Find("Content Container/Header Row/Profile Avatar/Text")?.GetComponent<TMP_Text>();
+
+            if (avatarText != null || avatarImage != null)
+            {
+                string uName = appData.profile.name;
+                string initials = "";
+                if (!string.IsNullOrEmpty(uName))
+                {
+                    string[] parts = uName.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var part in parts)
+                    {
+                        if (initials.Length < 2) initials += part[0];
+                    }
+                    initials = initials.ToUpper();
+                }
+                if (string.IsNullOrEmpty(initials)) initials = "U";
+
+                if (avatarText != null) avatarText.text = initials;
+
+                if (avatarImage != null)
+                {
+                    int hash = !string.IsNullOrEmpty(uName) ? uName.GetHashCode() : 0;
+                    float hue = Mathf.Abs(hash % 360) / 360f;
+                    Color avatarColor = Color.HSVToRGB(hue, 0.7f, 0.7f); // Consistent, soft pastel color
+                    avatarImage.color = avatarColor;
+                }
             }
 
             // 2. Fetch or Create Today's Meal Record
