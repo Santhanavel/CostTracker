@@ -14,10 +14,22 @@ namespace FoodTracker.Core
 
         private IEnumerator Start()
         {
+            // Ensure NotificationManager is present
+            if (FindAnyObjectByType<NotificationManager>() == null)
+            {
+                GameObject nMgr = new GameObject("NotificationManager", typeof(NotificationManager));
+                DontDestroyOnLoad(nMgr);
+            }
+
             // 1. Ensure SaveManager initialized
             if (SaveManager.Instance != null)
             {
                 SaveManager.Instance.Load();
+            }
+
+            if (NotificationManager.Instance != null)
+            {
+                NotificationManager.Instance.ScheduleAllNotifications();
             }
 
             // 2. Wait splash duration

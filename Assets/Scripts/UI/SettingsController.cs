@@ -116,8 +116,8 @@ namespace FoodTracker.UI
 
                 TMP_Text nameTxt = row.transform.Find("Label")?.GetComponent<TMP_Text>();
                 TMP_Text timeTxt = row.transform.Find("Time")?.GetComponent<TMP_Text>();
-                Button editBtn = row.transform.Find("EditButton")?.GetComponent<Button>();
-                Button deleteBtn = row.transform.Find("DeleteButton")?.GetComponent<Button>();
+                Button editBtn = row.transform.Find("Actions/EditButton")?.GetComponent<Button>();
+                Button deleteBtn = row.transform.Find("Actions/DeleteButton")?.GetComponent<Button>();
 
                 if (nameTxt != null) nameTxt.text = reminder.mealType;
                 if (timeTxt != null) timeTxt.text = reminder.timeString;
@@ -165,6 +165,10 @@ namespace FoodTracker.UI
 
             SaveManager.Instance.AppData.reminderRecords.Remove(reminder);
             SaveManager.Instance.Save();
+            if (NotificationManager.Instance != null)
+            {
+                NotificationManager.Instance.ScheduleAllNotifications();
+            }
             RefreshRemindersList();
         }
 
@@ -202,6 +206,10 @@ namespace FoodTracker.UI
             }
 
             SaveManager.Instance.Save();
+            if (NotificationManager.Instance != null)
+            {
+                NotificationManager.Instance.ScheduleAllNotifications();
+            }
             if (modalPopup != null) modalPopup.SetActive(false);
             RefreshRemindersList();
         }
