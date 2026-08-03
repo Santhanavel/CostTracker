@@ -141,7 +141,7 @@ namespace FoodTracker.UI
 
             if (cellButton != null)
             {
-                cellButton.interactable = true;
+                cellButton.interactable = !isFuture;
             }
 
             SetupDots(isFuture, bComp, lComp, dComp, isFadedMonth);
