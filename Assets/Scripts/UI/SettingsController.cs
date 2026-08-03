@@ -26,7 +26,7 @@ namespace FoodTracker.UI
 
         [Header("Bottom Sheet Popup")]
         [SerializeField] private GameObject modalPopup; // Bottom Sheet GameObject
-        [SerializeField] private TMP_Dropdown popupMealDropdown;
+        [SerializeField] private CustomMealDropdown popupMealDropdown;
         [SerializeField] private TMP_InputField popupTimeInput;
         [SerializeField] private Button popupSaveButton;
         [SerializeField] private Button popupCancelButton;
