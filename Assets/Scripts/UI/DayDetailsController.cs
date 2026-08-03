@@ -128,7 +128,7 @@ namespace FoodTracker.UI
             // Go back to calendar
             if (NavigationManager.Instance != null)
             {
-                NavigationManager.Instance.NavigateTo("Calender Page");
+                NavigationManager.Instance.NavigateTo(PageType.Calendar);
             }
         }
     }

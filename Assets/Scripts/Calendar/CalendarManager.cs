@@ -99,10 +99,10 @@ namespace FoodTracker.UI
             if (prevMonthBtn != null) prevMonthBtn.onClick.AddListener(PreviousMonth);
             if (nextMonthBtn != null) nextMonthBtn.onClick.AddListener(NextMonth);
 
-            if (navHomeButton != null) navHomeButton.onClick.AddListener(() => NavigateTo("Meal update page"));
-            if (navCalendarButton != null) navCalendarButton.onClick.AddListener(() => NavigateTo("Calender Page"));
-            if (navStatsButton != null) navStatsButton.onClick.AddListener(() => NavigateTo("Statistics Page"));
-            if (navMoreButton != null) navMoreButton.onClick.AddListener(() => NavigateTo("Settings Page"));
+            if (navHomeButton != null) navHomeButton.onClick.AddListener(() => NavigateTo(PageType.Home));
+            if (navCalendarButton != null) navCalendarButton.onClick.AddListener(() => NavigateTo(PageType.Calendar));
+            if (navStatsButton != null) navStatsButton.onClick.AddListener(() => NavigateTo(PageType.Statistics));
+            if (navMoreButton != null) navMoreButton.onClick.AddListener(() => NavigateTo(PageType.Settings));
 
             Refresh();
         }
@@ -226,15 +226,15 @@ namespace FoodTracker.UI
 
             if (NavigationManager.Instance != null)
             {
-                NavigationManager.Instance.NavigateTo("Day Details Page");
+                NavigationManager.Instance.NavigateTo(PageType.DayDetails);
             }
         }
 
-        private void NavigateTo(string pageName)
+        private void NavigateTo(PageType pageType)
         {
             if (NavigationManager.Instance != null)
             {
-                NavigationManager.Instance.NavigateTo(pageName);
+                NavigationManager.Instance.NavigateTo(pageType);
             }
         }
     }

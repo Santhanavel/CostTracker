@@ -40,12 +40,12 @@ namespace FoodTracker.UI
 
         private void Start()
         {
-            if (viewCalendarButton != null) viewCalendarButton.onClick.AddListener(() => NavigateTo("Calender Page"));
-            if (navHomeButton != null) navHomeButton.onClick.AddListener(() => NavigateTo("Meal update page"));
-            if (navCalendarButton != null) navCalendarButton.onClick.AddListener(() => NavigateTo("Calender Page"));
+            if (viewCalendarButton != null) viewCalendarButton.onClick.AddListener(() => NavigateTo(PageType.Calendar));
+            if (navHomeButton != null) navHomeButton.onClick.AddListener(() => NavigateTo(PageType.Home));
+            if (navCalendarButton != null) navCalendarButton.onClick.AddListener(() => NavigateTo(PageType.Calendar));
             // Placeholders for other pages
-            if (navStatsButton != null) navStatsButton.onClick.AddListener(() => NavigateTo("Statistics Page"));
-            if (navMoreButton != null) navMoreButton.onClick.AddListener(() => NavigateTo("Settings Page"));
+            if (navStatsButton != null) navStatsButton.onClick.AddListener(() => NavigateTo(PageType.Statistics));
+            if (navMoreButton != null) navMoreButton.onClick.AddListener(() => NavigateTo(PageType.Settings));
 
             RefreshDashboard();
         }
@@ -190,11 +190,11 @@ namespace FoodTracker.UI
             }
         }
 
-        private void NavigateTo(string pageName)
+        private void NavigateTo(PageType pageType)
         {
             if (NavigationManager.Instance != null)
             {
-                NavigationManager.Instance.NavigateTo(pageName);
+                NavigationManager.Instance.NavigateTo(pageType);
             }
         }
     }

@@ -3,6 +3,17 @@ using System.Collections.Generic;
 
 namespace FoodTracker.Managers
 {
+    public enum PageType
+    {
+        Home,
+        Onboarding,
+        DayDetails,
+        Calendar,
+        Statistics,
+        Settings,
+        Splash
+    }
+
     public class NavigationManager : MonoBehaviour
     {
         public static NavigationManager Instance { get; private set; }
@@ -23,16 +34,17 @@ namespace FoodTracker.Managers
             }
         }
 
-        public void NavigateTo(string pageName)
+        public void NavigateTo(PageType pageType)
         {
-            Debug.Log($"Navigating to page: {pageName}");
+            string targetName = GetPageName(pageType);
+            Debug.Log($"Navigating to PageType: {pageType} ({targetName})");
             bool pageFound = false;
 
             foreach (var page in pages)
             {
                 if (page != null)
                 {
-                    bool match = page.name.Equals(pageName, System.StringComparison.OrdinalIgnoreCase);
+                    bool match = page.name.Equals(targetName, System.StringComparison.OrdinalIgnoreCase);
                     page.SetActive(match);
                     if (match)
                     {
@@ -43,7 +55,7 @@ namespace FoodTracker.Managers
 
             if (!pageFound)
             {
-                Debug.LogWarning($"Page '{pageName}' not found or registered in NavigationManager.");
+                Debug.LogWarning($"Page for type '{pageType}' (name: '{targetName}') not found or registered in NavigationManager.");
             }
         }
 
@@ -52,6 +64,29 @@ namespace FoodTracker.Managers
             if (page != null && !pages.Contains(page))
             {
                 pages.Add(page);
+            }
+        }
+
+        private string GetPageName(PageType pageType)
+        {
+            switch (pageType)
+            {
+                case PageType.Home:
+                    return "Meal update page";
+                case PageType.Onboarding:
+                    return "Onboarding Page";
+                case PageType.DayDetails:
+                    return "Day Details Page";
+                case PageType.Calendar:
+                    return "Calender Page";
+                case PageType.Statistics:
+                    return "Statistics Page";
+                case PageType.Settings:
+                    return "Settings Page";
+                case PageType.Splash:
+                    return "Splash Page";
+                default:
+                    return "";
             }
         }
     }

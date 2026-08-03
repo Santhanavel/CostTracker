@@ -24,12 +24,12 @@ namespace FoodTracker.UI
         {
             if (NavigationManager.Instance != null)
             {
-                NavigationManager.Instance.NavigateTo(targetPageName);
+                NavigationManager.Instance.NavigateTo(PageType.Onboarding);
             }
             else
             {
                 // Fallback direct deactivate/activate if navigation manager is not in scene yet
-                GameObject target = GameObject.Find(targetPageName);
+                GameObject target = GameObject.Find("Onboarding Page");
                 if (target != null)
                 {
                     target.SetActive(true);

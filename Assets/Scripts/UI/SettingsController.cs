@@ -58,10 +58,10 @@ namespace FoodTracker.UI
             if (popupSaveButton != null) popupSaveButton.onClick.AddListener(OnPopupSaveClicked);
             if (popupCancelButton != null) popupCancelButton.onClick.AddListener(() => { if (modalPopup != null) modalPopup.SetActive(false); });
 
-            if (navHomeButton != null) navHomeButton.onClick.AddListener(() => NavigateTo("Meal update page"));
-            if (navCalendarButton != null) navCalendarButton.onClick.AddListener(() => NavigateTo("Calender Page"));
-            if (navStatsButton != null) navStatsButton.onClick.AddListener(() => NavigateTo("Statistics Page"));
-            if (navMoreButton != null) navMoreButton.onClick.AddListener(() => NavigateTo("More Page"));
+            if (navHomeButton != null) navHomeButton.onClick.AddListener(() => NavigateTo(PageType.Home));
+            if (navCalendarButton != null) navCalendarButton.onClick.AddListener(() => NavigateTo(PageType.Calendar));
+            if (navStatsButton != null) navStatsButton.onClick.AddListener(() => NavigateTo(PageType.Statistics));
+            if (navMoreButton != null) navMoreButton.onClick.AddListener(() => NavigateTo(PageType.Settings));
 
             LoadAllData();
             if (modalPopup != null) modalPopup.SetActive(false);
@@ -233,19 +233,19 @@ namespace FoodTracker.UI
             }
 
             SaveManager.Instance.Save();
-            NavigateTo("More Page");
+            NavigateTo(PageType.Home);
         }
 
         private void OnBackClicked()
         {
-            NavigateTo("More Page");
+            NavigateTo(PageType.Home);
         }
 
-        private void NavigateTo(string pageName)
+        private void NavigateTo(PageType pageType)
         {
             if (NavigationManager.Instance != null)
             {
-                NavigationManager.Instance.NavigateTo(pageName);
+                NavigationManager.Instance.NavigateTo(pageType);
             }
         }
     }

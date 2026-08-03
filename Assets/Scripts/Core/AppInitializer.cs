@@ -29,28 +29,29 @@ namespace FoodTracker.Core
                 bool isFirstLaunch = SaveManager.Instance.AppData.firstLaunch;
                 if (isFirstLaunch)
                 {
-                    NavigateTo(onboardingScreenName);
+                    NavigateTo(PageType.Onboarding);
                 }
                 else
                 {
-                    NavigateTo(homeScreenName);
+                    NavigateTo(PageType.Home);
                 }
             }
             else
             {
                 // Fallback to onboarding if manager is missing
-                NavigateTo(onboardingScreenName);
+                NavigateTo(PageType.Onboarding);
             }
         }
 
-        private void NavigateTo(string pageName)
+        private void NavigateTo(PageType pageType)
         {
             if (NavigationManager.Instance != null)
             {
-                NavigationManager.Instance.NavigateTo(pageName);
+                NavigationManager.Instance.NavigateTo(pageType);
             }
             else
             {
+                string pageName = pageType == PageType.Onboarding ? "Onboarding Page" : "Meal update page";
                 GameObject target = GameObject.Find(pageName);
                 if (target != null)
                 {

@@ -66,7 +66,7 @@ namespace FoodTracker.UI
 
             if (NavigationManager.Instance != null)
             {
-                NavigationManager.Instance.NavigateTo(targetScreenName);
+                NavigationManager.Instance.NavigateTo(PageType.Home);
             }
         }
 
