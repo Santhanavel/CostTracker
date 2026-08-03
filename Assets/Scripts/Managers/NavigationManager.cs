@@ -40,6 +40,13 @@ namespace FoodTracker.Managers
             Debug.Log($"Navigating to PageType: {pageType} ({targetName})");
             bool pageFound = false;
 
+            // Deactivate Splash Page if moving to another screen
+            if (pageType != PageType.Splash)
+            {
+                GameObject splash = GameObject.Find("Splash Page");
+                if (splash != null) splash.SetActive(false);
+            }
+
             foreach (var page in pages)
             {
                 if (page != null)
