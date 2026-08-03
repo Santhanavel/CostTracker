@@ -59,13 +59,19 @@ namespace FoodTracker.UI
             }
         }
 
-        public void Setup(DateTime date, Color bgColor, bool isSelected, Color selectColor, int completedCount, bool isFutureOrNoData, Action<DateTime> onClick)
+        public void Setup(DateTime date, bool isFuture, bool isSelected, Color selectColor, bool bComp, bool lComp, bool dComp, bool isFadedMonth, Action<DateTime> onClick)
         {
             SelfWire();
             cellDate = date;
             onClickCallback = onClick;
 
             bool isToday = date.Date == DateTime.Today.Date;
+
+            // Compute completed count
+            int completedCount = 0;
+            if (bComp) completedCount++;
+            if (lComp) completedCount++;
+            if (dComp) completedCount++;
 
             if (dateText != null)
             {
@@ -74,32 +80,52 @@ namespace FoodTracker.UI
                 dateText.fontSize = 22;
                 dateText.fontStyle = FontStyles.Bold;
 
-                if ((date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday) && completedCount == 0 && !isFutureOrNoData)
+                if (isFuture)
                 {
-                    dateText.color = new Color(0.96f, 0.969f, 0.98f, 1.0f); // Bright Text `#F5F7FA`
+                    dateText.color = new Color(0.682f, 0.718f, 0.698f, isFadedMonth ? 0.25f : 0.5f);
                 }
                 else
                 {
-                    dateText.color = isFutureOrNoData ? new Color(0.655f, 0.718f, 0.694f, 0.5f) : new Color(0.96f, 0.969f, 0.98f, 1.0f);
+                    dateText.color = new Color(0.973f, 0.976f, 0.98f, isFadedMonth ? 0.5f : 1.0f);
                 }
             }
 
             if (dateImage != null)
             {
-                if ((date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday) && completedCount == 0 && !isFutureOrNoData)
+                Color cellColor;
+                if (isFadedMonth)
                 {
-                    dateImage.color = new Color(1.0f, 0.357f, 0.357f, 1.0f); // Failed red `#FF5B5B`
+                    // Dark shadowed cell color for offset month days
+                    cellColor = new Color(0.02f, 0.06f, 0.05f, 0.6f);
+                }
+                else if (isFuture)
+                {
+                    cellColor = new Color(0.09f, 0.196f, 0.161f, 0.4f); // spruce green translucent
                 }
                 else
                 {
-                    // If future, apply lower opacity
-                    Color finalColor = bgColor;
-                    if (isFutureOrNoData)
+                    // Past/Present day states:
+                    // 0 meals = Red, 1 meal = Yellow, 2 meals = Blue, 3 meals = Green
+                    switch (completedCount)
                     {
-                        finalColor.a = 0.4f;
+                        case 0:
+                            cellColor = new Color(0.9f, 0.3f, 0.3f, 1.0f);    // Red
+                            break;
+                        case 1:
+                            cellColor = new Color(1.0f, 0.757f, 0.027f, 1.0f); // Yellow
+                            break;
+                        case 2:
+                            cellColor = new Color(0.176f, 0.612f, 0.859f, 1.0f); // Blue
+                            break;
+                        case 3:
+                            cellColor = new Color(0.18f, 0.8f, 0.443f, 1.0f);  // Green
+                            break;
+                        default:
+                            cellColor = new Color(0.09f, 0.196f, 0.161f, 1.0f);
+                            break;
                     }
-                    dateImage.color = finalColor;
                 }
+                dateImage.color = cellColor;
             }
 
             if (borderImage != null)
@@ -118,10 +144,10 @@ namespace FoodTracker.UI
                 cellButton.interactable = true;
             }
 
-            SetupDots(completedCount, isFutureOrNoData, date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday);
+            SetupDots(isFuture, bComp, lComp, dComp, isFadedMonth);
         }
 
-        private void SetupDots(int completedCount, bool isFutureOrNoData, bool isWeekend)
+        private void SetupDots(bool isFuture, bool bComp, bool lComp, bool dComp, bool isFadedMonth)
         {
             if (dotsContainer == null || dotPrefab == null) return;
 
@@ -132,43 +158,25 @@ namespace FoodTracker.UI
                 Destroy(child.gameObject);
             }
 
-            Color greenColor = new Color(0.18f, 0.8f, 0.443f, 1.0f);   // `#2ECC71`
-            Color yellowColor = new Color(1.0f, 0.757f, 0.027f, 1.0f); // `#FFC107`
-            Color redColor = new Color(1.0f, 0.357f, 0.357f, 1.0f);    // `#FF5B5B`
-            Color grayColor = new Color(0.655f, 0.718f, 0.694f, 0.4f);  // `#A7B7B1` muted
+            if (isFuture || isFadedMonth) return; // Future or offset days show no dots
 
-            if (isWeekend && completedCount == 0 && !isFutureOrNoData)
+            // Dot colors:
+            // Breakfast = Green, Lunch = Orange, Dinner = Purple
+            Color breakfastColor = new Color(0.18f, 0.8f, 0.443f, 1.0f);   // `#2ECC71` Green
+            Color lunchColor = new Color(1.0f, 0.647f, 0.0f, 1.0f);       // `#FFA500` Orange
+            Color dinnerColor = new Color(0.6f, 0.4f, 0.9f, 1.0f);         // `#9966E6` Purple
+
+            if (isFadedMonth)
             {
-                GameObject xObj = new GameObject("MissedText", typeof(RectTransform));
-                xObj.transform.SetParent(dotsContainer, false);
-                TMP_Text t = xObj.AddComponent<TextMeshProUGUI>();
-                t.text = "×";
-                t.fontSize = 22;
-                t.fontStyle = FontStyles.Bold;
-                t.color = Color.white;
-                t.alignment = TextAlignmentOptions.Center;
-                return;
+                breakfastColor.a *= 0.4f;
+                lunchColor.a *= 0.4f;
+                dinnerColor.a *= 0.4f;
             }
 
-            if (isFutureOrNoData)
-            {
-                CreateDot(grayColor);
-                CreateDot(grayColor);
-            }
-            else if (completedCount == 2)
-            {
-                CreateDot(greenColor);
-                CreateDot(greenColor);
-            }
-            else if (completedCount == 1)
-            {
-                CreateDot(yellowColor);
-                CreateDot(yellowColor);
-            }
-            else
-            {
-                CreateDot(redColor);
-            }
+            // Create dot based on which meal was completed
+            if (bComp) CreateDot(breakfastColor);
+            if (lComp) CreateDot(lunchColor);
+            if (dComp) CreateDot(dinnerColor);
         }
 
         private void CreateDot(Color c)

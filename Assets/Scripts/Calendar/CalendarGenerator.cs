@@ -137,13 +137,19 @@ namespace FoodTracker.Calendar
                 DateTime cellDate = new DateTime(prevMonth.Year, prevMonth.Month, dayNum);
                 DateCell cell = dateCells[i];
                 cell.gameObject.SetActive(true);
+
+                bool bComp = false, lComp = false, dComp = false;
+                GetMealCompletionStates(cellDate, out bComp, out lComp, out dComp);
+
                 cell.Setup(
                     cellDate,
-                    emptyCellColor,
+                    cellDate.Date > DateTime.Today.Date,
                     false,
                     selectedBorderColor,
-                    0,
-                    true, // Mark as future/faded
+                    bComp,
+                    lComp,
+                    dComp,
+                    true, // Faded month
                     onDaySelected
                 );
             }
@@ -157,20 +163,22 @@ namespace FoodTracker.Calendar
                 DateTime cellDate = new DateTime(year, month, day);
                 DateCell cell = dateCells[index];
 
-                int completedCount = GetDayCompletedCount(cellDate);
-                bool isFutureOrNoData = cellDate.Date > DateTime.Today || !HasMealRecord(cellDate);
+                bool isFuture = cellDate.Date > DateTime.Today.Date;
                 bool isSelected = cellDate.Date == selectedDate.Date;
 
-                Color bgColor = isFutureOrNoData ? futureCellColor : activeCellColor;
+                bool bComp = false, lComp = false, dComp = false;
+                GetMealCompletionStates(cellDate, out bComp, out lComp, out dComp);
 
                 cell.gameObject.SetActive(true);
                 cell.Setup(
-                    cellDate, 
-                    bgColor, 
-                    isSelected, 
-                    selectedBorderColor, 
-                    completedCount, 
-                    isFutureOrNoData, 
+                    cellDate,
+                    isFuture,
+                    isSelected,
+                    selectedBorderColor,
+                    bComp,
+                    lComp,
+                    dComp,
+                    false, // Active month
                     onDaySelected
                 );
             }
@@ -184,15 +192,40 @@ namespace FoodTracker.Calendar
                 DateTime cellDate = new DateTime(nextMonth.Year, nextMonth.Month, dayNum);
                 DateCell cell = dateCells[i];
                 cell.gameObject.SetActive(true);
+
+                bool bComp = false, lComp = false, dComp = false;
+                GetMealCompletionStates(cellDate, out bComp, out lComp, out dComp);
+
                 cell.Setup(
                     cellDate,
-                    emptyCellColor,
+                    cellDate.Date > DateTime.Today.Date,
                     false,
                     selectedBorderColor,
-                    0,
-                    true, // Mark as future/faded
+                    bComp,
+                    lComp,
+                    dComp,
+                    true, // Faded month
                     onDaySelected
                 );
+            }
+        }
+
+        private void GetMealCompletionStates(DateTime date, out bool breakfast, out bool lunch, out bool dinner)
+        {
+            breakfast = false;
+            lunch = false;
+            dinner = false;
+
+            if (SaveManager.Instance == null || SaveManager.Instance.AppData == null) return;
+
+            string dateStr = date.ToString("yyyy-MM-dd");
+            MealRecord record = SaveManager.Instance.AppData.mealRecords.Find(r => r.dateString == dateStr);
+
+            if (record != null)
+            {
+                breakfast = record.breakfastCompleted;
+                lunch = record.lunchCompleted;
+                dinner = record.dinnerCompleted;
             }
         }
 
